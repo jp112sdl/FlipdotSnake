@@ -17,6 +17,8 @@ typedef enum e_games {
 	TETRIS
 } t_game;
 
-t_game selectedGame;
+extern t_game selectedGame;
+
+void gameSelectLoop();
 
 #endif /* GAMESELECT_H_ */

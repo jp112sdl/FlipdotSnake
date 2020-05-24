@@ -11,6 +11,6 @@
 
 #include <stdint.h>
 
-const uint8_t FONT_5x3[95*3];
+extern const uint8_t FONT_5x3[95*3];
 
 #endif /* FONT_5X3_H_ */

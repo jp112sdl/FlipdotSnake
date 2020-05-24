@@ -13,6 +13,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include <pins_arduino.h>
+#include <Wire.h>
+
+#include "LAWO_MCP23017.h"
+
+
 /*
  * MATRIX CONFIGURATION
  */
@@ -23,44 +29,16 @@
 #define MAX_ROW 13
 #define VIEWPORT_HEIGHT (MAX_ROW - MIN_ROW + 1)
 #define PANEL_WIDTH 28
+#define COL_SWAP
 
 /*
  * PIN DECLARATIONS
  */
 
-#define PORT_ROW_A0 PORTD
-#define PORT_ROW_A1 PORTD
-#define PORT_ROW_A2 PORTD
-#define PORT_ROW_A3 PORTD
-#define PORT_COL_A0 PORTC
-#define PORT_COL_A1 PORTC
-#define PORT_COL_A2 PORTC
-#define PORT_COL_A3 PORTC
-#define PORT_COL_A4 PORTB
-#define PORT_ROWS_BOTTOM PORTD
-#define PORT_ROWS_TOP PORTD
-#define PORT_D PORTC
-#define PORT_E PORTB
-#define PORT_LED PORTC
 
-#define ROW_A0 (1 << PD6)
-#define ROW_A1 (1 << PD7)
-#define ROW_A2 (1 << PD5)
-#define ROW_A3 (1 << PD4)
-#define COL_A0 (1 << PC4)
-#define COL_A1 (1 << PC3)
-#define COL_A2 (1 << PC2)
-#define COL_A3 (1 << PC0)
-#define COL_A4 (1 << PB5)
-#define ROWS_BOTTOM (1 << PD3)
-#define ROWS_TOP (1 << PD2)
-#define D (1 << PC1)
-#define E1 (1 << PB3)
-#define E2 (1 << PB0)
-#define E3 (1 << PB1)
-#define E4 (1 << PB2)
-#define E5 (1 << PB4)
-#define LED (1 << PC5)
+
+#define ADDRESS_ROW_MCP_Y     0x20
+#define ADDRESS_ROW_MCP_B     0x21
 
 /*
  * GLOBAL CONSTANTS
@@ -87,5 +65,7 @@ void setBacklight(uint8_t status);
 void setPixel(uint8_t x, uint8_t y, uint8_t state);
 void setMatrix(uint16_t* newBitmap, uint16_t* oldBitmap);
 void clearMatrix();
+void initPins();
+bool initMCP();
 
 #endif /* FLIPDOT_H_ */

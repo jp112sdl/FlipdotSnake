@@ -47,7 +47,7 @@ typedef struct s_blockData {
 	int16_t y;
 } t_blockData;
 
-t_blockData placedBlocks[200];
+//t_blockData placedBlocks[200];
 
 void outputTetrisPlayfield();
 t_collision drawBlock(uint16_t* buf, t_blockType blockType, t_blockRotation rotation, int16_t x0, int16_t y0, uint8_t state);

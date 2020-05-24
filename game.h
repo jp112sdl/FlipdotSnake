@@ -11,8 +11,8 @@
 
 #include "flipdot.h"
 
-uint16_t playfield[MATRIX_WIDTH];
-uint16_t oldPlayfield[MATRIX_WIDTH];
+extern uint16_t playfield[MATRIX_WIDTH];
+extern uint16_t oldPlayfield[MATRIX_WIDTH];
 
 typedef enum e_directions {
 	UP,

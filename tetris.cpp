@@ -11,50 +11,51 @@
 #include "graphics.h"
 
 #include <avr/eeprom.h>
+#include <string.h>
 
-const uint8_t blockI[4*4] = {
-	0b0001, 0b0001, 0b0001, 0b0001,	// Rotation 90°
-	0b0000, 0b0000, 0b0000, 0b1111,	// Rotation 180°
-	0b0001, 0b0001, 0b0001, 0b0001,	// Rotation 270°
-	0b0000, 0b0000, 0b0000, 0b1111,	// Rotation 0°
+/*const*/ uint8_t blockI[4*4] = {
+	0b0001, 0b0001, 0b0001, 0b0001,	// Rotation 90ï¿½
+	0b0000, 0b0000, 0b0000, 0b1111,	// Rotation 180ï¿½
+	0b0001, 0b0001, 0b0001, 0b0001,	// Rotation 270ï¿½
+	0b0000, 0b0000, 0b0000, 0b1111,	// Rotation 0ï¿½
 };
 
-const uint8_t blockO[4*4] = {
+/*const*/ uint8_t blockO[4*4] = {
 	0b0000, 0b0000, 0b0011, 0b0011,
 	0b0000, 0b0000, 0b0011, 0b0011,
 	0b0000, 0b0000, 0b0011, 0b0011,
 	0b0000, 0b0000, 0b0011, 0b0011
 };
 
-const uint8_t blockL[4*4] = {
+/*const*/ uint8_t blockL[4*4] = {
 	0b0000, 0b0011, 0b0001, 0b0001,
 	0b0000, 0b0000, 0b0001, 0b0111,
 	0b0000, 0b0010, 0b0010, 0b0011,
 	0b0000, 0b0000, 0b0111, 0b0100,
 };
 
-const uint8_t blockJ[4*4] = {
+/*const*/ uint8_t blockJ[4*4] = {
 	0b0000, 0b0001, 0b0001, 0b0011,
 	0b0000, 0b0000, 0b0100, 0b0111,
 	0b0000, 0b0011, 0b0010, 0b0010,
 	0b0000, 0b0000, 0b0111, 0b0001
 };
 
-const uint8_t blockS[4*4] = {
+/*const*/ uint8_t blockS[4*4] = {
 	0b0000, 0b0010, 0b0011, 0b0001,
 	0b0000, 0b0000, 0b0011, 0b0110,
 	0b0000, 0b0010, 0b0011, 0b0001,
 	0b0000, 0b0000, 0b0011, 0b0110
 };
 
-const uint8_t blockZ[4*4] = {
+/*const*/ uint8_t blockZ[4*4] = {
 	0b0000, 0b0001, 0b0011, 0b0010,
 	0b0000, 0b0000, 0b0110, 0b0011,
 	0b0000, 0b0001, 0b0011, 0b0010,
 	0b0000, 0b0000, 0b0110, 0b0011
 };
 
-const uint8_t blockT[4*4] = {
+/*const*/ uint8_t blockT[4*4] = {
 	0b0000, 0b0001, 0b0011, 0b0001,
 	0b0000, 0b0000, 0b0010, 0b0111,
 	0b0000, 0b0010, 0b0011, 0b0010,
@@ -80,6 +81,9 @@ uint8_t level = 0;
 uint16_t numLines = 0;
 uint64_t sidewaysMoveStart = 0;
 uint8_t firstSidewaysMove = 0;
+
+uint32_t eepTetrisHighScore = EEPROM_ADDR_TETRIS_HIGH_SCORE;
+
 
 t_collision drawBlock(uint16_t* buf, t_blockType blockType, t_blockRotation rotation, int x0, int y0, uint8_t state) {
 	uint8_t ret = 1;
@@ -209,7 +213,7 @@ t_collision drawBlockData(uint16_t* buf, t_blockData block, uint8_t state) {
 }
 
 void generateNewBlock() {
-	t_blockType type = getRandomNumber(0, NUM_BLOCK_TYPES);
+	t_blockType type = static_cast<t_blockType>(getRandomNumber(0, NUM_BLOCK_TYPES));
 	currentBlock.type = type;
 	currentBlock.rotation = ROT_90;
 	currentBlock.x = MATRIX_WIDTH - 2;
@@ -218,7 +222,7 @@ void generateNewBlock() {
 }
 
 void placeCurrentBlock() {
-	drawBlockData(&placedBlocksPlayfield, currentBlock, 1);
+	drawBlockData(placedBlocksPlayfield, currentBlock, 1);
 }
 
 uint8_t checkLineFull(uint8_t x) {
@@ -256,16 +260,16 @@ void removeFullLines() {
 void tetrisGameOver() {
 	clearPlayfield();
 	memset(&placedBlocksPlayfield, 0, MATRIX_WIDTH*2);
-	fill(&playfield, 1, MATRIX_WIDTH);
+	fill(playfield, 1, MATRIX_WIDTH);
 	setQuickUpdate(0);
 	outputPlayfield();
 	setQuickUpdate(1);
 	_delay_ms(1000);
 	clearPlayfield();
 	updateTetrisHighScore();
-	uint32_t highScore = eeprom_read_dword(EEPROM_ADDR_TETRIS_HIGH_SCORE);
-	drawNumber(&playfield, 0, 0, score, 1);
-	drawNumber(&playfield, 0, 8, highScore, 1);
+	uint32_t highScore = eeprom_read_dword(&eepTetrisHighScore);
+	drawNumber(playfield, 0, 0, score, 1);
+	drawNumber(playfield, 0, 8, highScore, 1);
 	outputPlayfield();
 	score = 0;
 	level = 0;
@@ -275,9 +279,9 @@ void tetrisGameOver() {
 }
 
 void updateTetrisHighScore() {
-	uint32_t highScore = eeprom_read_dword(EEPROM_ADDR_TETRIS_HIGH_SCORE);
+	uint32_t highScore = eeprom_read_dword(&eepTetrisHighScore);
 	if(highScore == (uint32_t)-1) highScore = 0;
-	if(score > highScore) eeprom_update_dword(EEPROM_ADDR_TETRIS_HIGH_SCORE, score);
+	if(score > highScore) eeprom_update_dword(&eepTetrisHighScore, score);
 }
 
 void tetrisInit() {
@@ -293,8 +297,7 @@ void tetrisLoop() {
 			switch(dir) {
 				case UP: {
 					buttonPressed = 1;
-					currentBlock.rotation++;
-					currentBlock.rotation %= 4;
+					currentBlock.rotation = static_cast<t_blockRotation>((static_cast<int>(currentBlock.rotation) + 1) % 4);
 					blockMovedUser = 1;
 					break;
 				}
@@ -361,8 +364,8 @@ void tetrisLoop() {
 		uint8_t blockPlaced = 0;
 		if(blockMovedAuto || blockMovedUser) {
 			clearPlayfield();
-			overlayPlayfield(&placedBlocksPlayfield);
-			t_collision collision = drawBlockData(&playfield, currentBlock, 1);
+			overlayPlayfield(placedBlocksPlayfield);
+			t_collision collision = drawBlockData(playfield, currentBlock, 1);
 		
 			if((collision & PIXEL) || (collision & OOB_LEFT)) {
 				if(blockMovedAuto) {
@@ -383,8 +386,7 @@ void tetrisLoop() {
 					if(blockMovedUser) {
 						switch(dir) {
 							case UP: {
-								currentBlock.rotation--;
-								currentBlock.rotation %= 4;
+								currentBlock.rotation = static_cast<t_blockRotation>((static_cast<int>(currentBlock.rotation) - 1) % 4);
 								break;
 							}
 							case LEFT: {

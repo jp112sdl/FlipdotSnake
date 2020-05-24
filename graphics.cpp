@@ -11,18 +11,25 @@
 
 #include <string.h>
 
+#include <Arduino.h>
+
 t_collision setPixelAt(uint16_t* buf, int16_t x, int16_t y, uint8_t state) {
 	// Sets a pixel in a framebuffer to a value
 	// Returns the direction in which a collision occurred, if any
 	// Collision detection currently only works for yellow on yellow and yellow on out-of-bounds
 	t_collision ret = NO_COLL;
-	if(x >= MATRIX_WIDTH) ret |= OOB_RIGHT;
-	if(x < 0) ret |= OOB_LEFT;
-	if(y >= VIEWPORT_HEIGHT) ret |= OOB_BOTTOM;
-	if(y < 0) ret |= OOB_TOP;
+	if(x >= MATRIX_WIDTH) 
+		ret = static_cast<t_collision>(static_cast<int>(ret) | OOB_RIGHT);
+	if(x < 0) 
+		ret = static_cast<t_collision>(static_cast<int>(ret) | OOB_LEFT);
+	if(y >= VIEWPORT_HEIGHT) 
+		ret = static_cast<t_collision>(static_cast<int>(ret) | OOB_BOTTOM);
+	if(y < 0) 
+		ret = static_cast<t_collision>(static_cast<int>(ret) | OOB_TOP);
 	y = MATRIX_HEIGHT - y - 1;
 	uint8_t pixChanged = (state == 1) && !((!!(buf[x] & (1 << y)) == state));
-	if(pixChanged == 0) ret |= PIXEL;
+	if(pixChanged == 0) 
+		ret = static_cast<t_collision>(static_cast<int>(ret) | PIXEL);
 	if(state) {
 		buf[x] |= (1 << y);
 	} else {
@@ -155,7 +162,7 @@ void floodFill(uint16_t* buf, int16_t x0, int16_t y0, uint8_t state) {
 	}
 }
 
-t_collision drawBitmapColMajor(uint16_t* buf, int16_t x0, int16_t y0, uint8_t width, uint8_t height, uint8_t* bitmap, uint8_t state, uint8_t useAlpha) {
+t_collision drawBitmapColMajor(uint16_t* buf, int16_t x0, int16_t y0, uint8_t width, uint8_t height, const uint8_t* bitmap, uint8_t state, uint8_t useAlpha) {
 	t_collision coll = NO_COLL;
 	t_collision tmpColl = NO_COLL;
 	for(uint8_t col = 0; col < width; col++) {
@@ -198,7 +205,7 @@ t_collision drawNumber(uint16_t* buf, int16_t x0, int16_t y0, uint32_t number, u
 	t_collision coll = NO_COLL;
 	t_collision tmpColl = NO_COLL;
 	uint8_t forceDraw = 0;
-	uint8_t strBuf[8];
+	char strBuf[8];
 	snprintf(strBuf, 8, "%7lu", number);
 	return drawString(buf, x0, y0, strBuf, state);
 }
