@@ -16,11 +16,11 @@ uint8_t PANEL_LINES[1] = {0};
 MCP23017Type<ADDRESS_ROW_MCP_Y> ROW_MCP_Y;
 MCP23017Type<ADDRESS_ROW_MCP_B> ROW_MCP_B;
 
-uint8_t COLUMN_LINES      [ 5] = { 4, 5, 6, 7, 8 /* 5 goes to 2 on PCB */ };  // Column Lines COL_A0...COL_A4
+uint8_t COLUMN_LINES      [ 5] = { 10 , 4, 11, 12, 8 /* 5 goes to 2 on PCB */ };  // Column Lines COL_A0...COL_A4
 uint8_t E_LINES           [ 5] = { 3, 3, 3, 3, 3 };
-static const uint8_t D         =  2;
-static const uint8_t LED       =  9;
-static const uint8_t MCP_RESET =  10;
+static const uint8_t D         =  5;
+static const uint8_t LED       =  6;
+static const uint8_t MCP_RESET =  13;
 
 uint8_t hasHalfPanelOffset(uint8_t colIndex) {
   /*
