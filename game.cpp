@@ -5,6 +5,7 @@
  *  Author: Julian
  */ 
 
+#include "main.h"
 #include "game.h"
 #include <avr/io.h>
 #include <stdlib.h>
@@ -12,10 +13,16 @@
 
 uint16_t playfield[MATRIX_WIDTH] = {0};
 uint16_t oldPlayfield[MATRIX_WIDTH] = {0};
+uint16_t adcResult = 0;
+volatile uint64_t lastSysTicks = 0;
 	
 t_direction getDPad() {
-	uint16_t adcResult = ADCL;
-	adcResult |= ((uint16_t)ADCH << 8);
+  if (sysTicks - lastSysTicks > 50) {
+    lastSysTicks = sysTicks;
+    adcResult = ADCL;
+	  adcResult |= ((uint16_t)ADCH << 8);
+  }
+
 	if(adcResult > 120 && adcResult < 230) return UP;
 	if(adcResult > 300 && adcResult < 350) return DOWN;
 	if(adcResult > 880 && adcResult < 980) return LEFT;
