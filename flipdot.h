@@ -35,8 +35,6 @@
  * PIN DECLARATIONS
  */
 
-
-
 #define ADDRESS_ROW_MCP_Y     0x20
 #define ADDRESS_ROW_MCP_B     0x21
 

@@ -17,10 +17,10 @@ MCP23017Type<ADDRESS_ROW_MCP_Y> ROW_MCP_Y;
 MCP23017Type<ADDRESS_ROW_MCP_B> ROW_MCP_B;
 
 uint8_t COLUMN_LINES      [ 5] = { 10 , 4, 11, 12, 8 /* 5 goes to 2 on PCB */ };  // Column Lines COL_A0...COL_A4
-uint8_t E_LINES           [ 5] = { 3, 3, 3, 3, 3 };
-static const uint8_t D         =  5;
-static const uint8_t LED       =  6;
-static const uint8_t MCP_RESET =  13;
+#define E_LINE      3
+#define D           5
+#define LED         6
+#define MCP_RESET  13
 
 uint8_t hasHalfPanelOffset(uint8_t colIndex) {
   /*
@@ -52,8 +52,8 @@ void initPins() {
   pinMode(MCP_RESET, OUTPUT);
   for (uint8_t i = 0; i < 5; i++) {
     pinMode(COLUMN_LINES[i], OUTPUT);
-    pinMode(E_LINES[i], OUTPUT);
   }
+  pinMode(E_LINE, OUTPUT);
   pinMode(D, OUTPUT);
   pinMode(LED, OUTPUT);
 }
@@ -141,7 +141,7 @@ void flip(uint8_t panelIndex) {
   */
 
   // Get the enable line for the specified panel
-  byte e = E_LINES[PANEL_LINES[panelIndex / PANEL_WIDTH]];
+  byte e = E_LINE;
 
   digitalWrite(e, HIGH);
   delayMicroseconds(FLIP_DURATION );
